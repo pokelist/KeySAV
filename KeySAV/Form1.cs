@@ -220,45 +220,6 @@ namespace KeySAV
             seed = (seed * a + c) & 0xFFFFFFFF;
             return seed;
         }
-        // Custom Encryption
-        private byte[] da(byte[] array)
-        {
-            if (COMPILEMODE == "Private")
-            {
-                return array;
-            }
-            else
-            {
-                // Returns the Encrypted/Decrypted Array of Data
-                int al = array.Length;
-                // Set Encryption Seed
-                uint eseed = (uint)(array[al - 4] + array[al - 3] * 0x100 + array[al - 2] * 0x10000 + array[al - 1] * 0x10000000);
-                byte[] nca = new Byte[al];
-
-                // Get our XORCryptor
-                uint xc = CEXOR(eseed);
-                uint xc0 = (xc & 0xFF);
-                uint xc1 = ((xc >> 8) & 0xFF);
-                uint xc2 = ((xc >> 16) & 0xFF);
-                uint xc3 = ((xc >> 24) & 0xFF);
-
-                // Fill Our New Array
-                for (int i = 0; i < (al - 4); i += 4)
-                {
-                    nca[i + 0] = (byte)(xc0 ^ array[i + 0]);
-                    nca[i + 1] = (byte)(xc1 ^ array[i + 1]);
-                    nca[i + 2] = (byte)(xc2 ^ array[i + 2]);
-                    nca[i + 3] = (byte)(xc3 ^ array[i + 3]);
-                }
-                // Return the Seed
-                nca[al - 4] = array[al - 4];
-                nca[al - 3] = array[al - 3];
-                nca[al - 2] = array[al - 2];
-                nca[al - 1] = array[al - 1];
-
-                return nca;
-            }
-        }
 
         // Array Manipulation
         private byte[] unshufflearray(byte[] pkx, uint sv)
@@ -950,7 +911,7 @@ namespace KeySAV
             if (saveboxkey.ShowDialog() == DialogResult.OK)
             {
                 string path = saveboxkey.FileName;
-                File.WriteAllBytes(path, da(keystream1));
+                File.WriteAllBytes(path, keystream1);
             }
         }
         private void B_DumpBreakBox2_Click(object sender, EventArgs e)
@@ -971,7 +932,7 @@ namespace KeySAV
             if (saveboxkey.ShowDialog() == DialogResult.OK)
             {
                 string path = saveboxkey.FileName;
-                File.WriteAllBytes(path, da(keystream2));
+                File.WriteAllBytes(path, keystream2);
             }
         }
         private void B_DumpBlank_Click(object sender, EventArgs e)
@@ -984,7 +945,7 @@ namespace KeySAV
             if (saveboxkey.ShowDialog() == DialogResult.OK)
             {
                 string path = saveboxkey.FileName;
-                File.WriteAllBytes(path, da(boxbreakblank));
+                File.WriteAllBytes(path, boxbreakblank);
             }
         }
 
@@ -1011,7 +972,7 @@ namespace KeySAV
             if (boxkeyfile.ShowDialog() == DialogResult.OK)
             {
                 string path = boxkeyfile.FileName;
-                boxkey = da(File.ReadAllBytes(path));
+                boxkey = File.ReadAllBytes(path);
                 T_BoxKey.Text = path;
             }
         }
@@ -1024,7 +985,7 @@ namespace KeySAV
             if (openblankekx.ShowDialog() == DialogResult.OK)
             {
                 string path = openblankekx.FileName;
-                blankekx = da(File.ReadAllBytes(path));
+                blankekx = File.ReadAllBytes(path);
                 T_Blank.Text = path;
             }
         }
@@ -1159,7 +1120,7 @@ namespace KeySAV
                                     {
                                         File.WriteAllBytes(T_BoxKey.Text + ".bak", oldboxkey);
                                     }
-                                    File.WriteAllBytes(T_BoxKey.Text, da(boxkey));
+                                    File.WriteAllBytes(T_BoxKey.Text, boxkey);
                                 }
                             }
 
